@@ -1,0 +1,15 @@
+services:
+  db:
+    image: postgres:latest
+    restart: unless-stopped
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_DB: "journey"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "1425"
+    volumes:
+      - db:/var/lib/postgresql/data
+volumes:
+  db:
+    driver: local
