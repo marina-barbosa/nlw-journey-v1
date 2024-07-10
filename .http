@@ -1,0 +1,8 @@
+@base_url = http://localhost:8080
+
+PATCH {{base_url}}/participants/f47ac10b-58cc-4372-a567-0e02b2c3d479/confirm
+Content-Type: application/json
+
+{
+    "participantId": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+}
