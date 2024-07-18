@@ -47,19 +47,12 @@ func run(ctx context.Context) error {
 	logger = logger.Named("journey_app")
 	defer func() { _ = logger.Sync() }()
 
-	// Configuração do banco de dados a partir das variáveis de ambiente
-	host := os.Getenv("JOURNEY_DATABASE_HOST")
-	port := os.Getenv("JOURNEY_DATABASE_PORT")
-	database := os.Getenv("JOURNEY_DATABASE_NAME")
-	user := os.Getenv("JOURNEY_DATABASE_USER")
-	password := os.Getenv("JOURNEY_DATABASE_PASSWORD")
-
 	pool, err := pgxpool.New(ctx, fmt.Sprintf("user=%s password=%s host=%s port=%s dbname=%s",
-		user,
-		password,
-		host,
-		port,
-		database,
+		os.Getenv("JOURNEY_DATABASE_USER"),
+		os.Getenv("JOURNEY_DATABASE_PASSWORD"),
+		os.Getenv("JOURNEY_DATABASE_HOST"),
+		os.Getenv("JOURNEY_DATABASE_PORT"),
+		os.Getenv("JOURNEY_DATABASE_NAME"),
 	))
 	if err != nil {
 		return err
@@ -70,14 +63,9 @@ func run(ctx context.Context) error {
 		return err
 	}
 
+	si := api.NewApi(pool, logger, mailpit.NewMailPit(pool))
 	r := chi.NewMux()
 	r.Use(middleware.RequestID, middleware.Recoverer, httputils.ChiLogger(logger))
-
-	si := api.NewApi(
-		pool,
-		logger,
-	)
-
 	r.Mount("/", spec.Handler(&si))
 
 	srv := &http.Server{
